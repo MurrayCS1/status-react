@@ -1,7 +1,7 @@
 (ns status-im.chat.events.commands
   (:require [cljs.reader :as reader]
             [clojure.string :as str]
-            [re-frame.core :refer [reg-fx dispatch trim-v]]
+            [re-frame.core :refer [reg-fx reg-cofx inject-cofx dispatch trim-v]]
             [status-im.data-store.messages :as msg-store]
             [status-im.utils.handlers :refer [register-handler-fx]]
             [status-im.components.status :as status]
@@ -23,7 +23,20 @@
           :chat     {:chat-id chat-id
                      :group-chat (get-in chats [chat-id :group-id])}}))
 
+;;;; Coeffects
+
+(reg-cofx
+ ::get-persisted-message
+ (fn [coeffects _]
+   (assoc coeffects :get-persisted-message #(msg-store/get-by-id %))))
+
 ;;;; Effects
+
+(reg-fx
+ ::update-persisted-message
+ (fn [message]
+   (msg-store/update message)))
+
 
 (reg-fx
  ::jail-command-data-request
@@ -32,11 +45,6 @@
                          (dissoc :message :data-type)
                          (assoc :callback
                                 #(dispatch [::jail-command-data-response % message data-type]))))))
-
-(reg-fx
- ::update-persisted-message
- (fn [message]
-   (msg-store/update message)))
 
 ;;;; Handlers
 
@@ -100,11 +108,11 @@
 
 (register-handler-fx
  :request-command-preview
- [trim-v]
- (fn [{:keys [db]} [{:keys [message-id] :as message}]]
+ [trim-v (inject-cofx ::get-persisted-message)]
+ (fn [{:keys [db get-persisted-message]} [{:keys [message-id] :as message}]]
    (let [preview (get-in db [:message-data :preview])]
      (when-not (contains? previews message-id)
-       (let [{serialized-preview :preview} (msg-store/get-by-id message-id)]
+       (let [{serialized-preview :preview} (get-persisted-message message-id)]
          ;; if preview is already cached in db, do not request it from jail
          ;; and write it directly to message-data path
          (if serialized-preview
