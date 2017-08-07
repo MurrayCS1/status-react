@@ -44,12 +44,12 @@
  ::jail-command-data-response
  [trim-v]
  (fn [{:keys [db]} [{{:keys [returned]} :result} {:keys [message-id on-requested]} data-type]]
-   (let [result (if (:markup result)
-                  (update result :markup commands-utils/generate-hiccup)
-                  :markup)]
+   (let [result (if (:markup returned)
+                  (update returned :markup commands-utils/generate-hiccup)
+                  returned)]
      (cond-> {}
        result
-       (assoc :db (update-in db [:message-data data-type message-id] result))
+       (assoc :db (assoc-in db [:message-data data-type message-id] result))
        (and result
             (= :preview data-type))
        (assoc ::update-persisted-message {:message-id message-id
