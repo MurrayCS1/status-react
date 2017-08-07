@@ -29,7 +29,7 @@
             [status-im.chat.utils :refer [console? not-console? safe-trim]]
             [status-im.utils.gfycat.core :refer [generate-gfy]]
             status-im.chat.handlers.input
-            status-im.chat.handlers.commands
+            status-im.chat.events.commands
             status-im.chat.handlers.animation
             status-im.chat.handlers.requests
             status-im.chat.handlers.unviewed-messages

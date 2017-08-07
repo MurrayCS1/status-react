@@ -187,12 +187,12 @@
                                :chat-id chat-id
                                :jail-id (or bot chat-id)}
             on-send-params    (merge params
-                                     {:data-type :on-send
-                                      :after     #(dispatch [::send-command %2 content chat-id])})
+                                     {:data-type   :on-send
+                                      :event-after #(vector ::send-command %2 content chat-id)})
             after-validation  #(dispatch [::request-command-data on-send-params])
             validation-params (merge params
-                                     {:data-type :validator
-                                      :after     #(dispatch [::proceed-validation %2 after-validation])})]
+                                     {:data-type   :validator
+                                      :event-after #(vector ::proceed-validation %2 after-validation)})]
 
         (dispatch [::request-command-data validation-params])))))
 
@@ -229,11 +229,11 @@
                                          :sending-in-progress? false}])
           (react-comp/dismiss-keyboard!))
         (dispatch [::request-command-data
-                   {:content   content
-                    :chat-id   chat-id
-                    :jail-id   (or bot chat-id)
-                    :data-type :preview
-                    :after     #(dispatch [::send-message % chat-id])}])))))
+                   {:content         content
+                    :chat-id         chat-id
+                    :jail-id         (or bot chat-id)
+                    :data-type       :preview
+                    :event-after     #(vector ::send-message % chat-id)}])))))
 
 (handlers/register-handler ::request-command-data
   (handlers/side-effect!
@@ -243,7 +243,7 @@
                      metadata
                      args]
               :as   content} :content
-             :keys     [chat-id jail-id data-type after]}]]
+             :keys     [chat-id jail-id data-type event-after]}]]
       (let [{:keys [dapp? dapp-url name]} (get contacts chat-id)
             message-id      (random/id)
             metadata        (merge metadata
@@ -270,7 +270,7 @@
                              :content      {:command (:name command)
                                             :params  params
                                             :type    (:type command)}
-                             :on-requested #(after command-message %)}]
+                             :on-requested #(event-after command-message %)}]
         (dispatch [:request-command-data request-data data-type])))))
 
 (handlers/register-handler :send-current-message
@@ -334,11 +334,11 @@
                                 (dispatch [:update-seq-arguments chat-id])
                                 (dispatch [:send-current-message]))]
         (dispatch [::request-command-data
-                   {:content   command
-                    :chat-id   chat-id
-                    :jail-id   (or (get-in command [:command :bot]) chat-id)
-                    :data-type :validator
-                    :after     #(dispatch [::proceed-validation %2 after-validation])}])))))
+                   {:content     command
+                    :chat-id     chat-id
+                    :jail-id     (or (get-in command [:command :bot]) chat-id)
+                    :data-type   :validator
+                    :event-after #(vector ::proceed-validation %2 after-validation)}])))))
 
 (handlers/register-handler :set-chat-seq-arg-input-text
   (fn [{:keys [current-chat-id] :as db} [_ text chat-id]]
