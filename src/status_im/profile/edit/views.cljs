@@ -1,7 +1,7 @@
-(ns status-im.profile.edit.screen
+(ns status-im.profile.edit.views
   (:require-macros [status-im.utils.views :refer [defview]])
-  (:require [cljs.spec.alpha :as s]
-            [clojure.string :as str]
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
             [reagent.core :as r]
             [re-frame.core :refer [dispatch]]
             [status-im.profile.styles :as st]
@@ -11,7 +11,7 @@
             [status-im.components.toolbar-new.view :refer [toolbar]]
             [status-im.components.toolbar-new.actions :as act]
             [status-im.i18n :refer [label]]
-            [status-im.profile.screen :refer [colorize-status-hashtags]]
+            [status-im.profile.views :refer [colorize-status-hashtags]]
             [status-im.components.sticky-button :refer [sticky-button]]
             [status-im.components.camera :as camera]
             [status-im.components.chat-icon.screen :refer [my-profile-icon]]
@@ -46,9 +46,9 @@
                         [:camera :write-external-storage]
                         (fn []
                           (camera/request-access
-                            #(if % (dispatch [:navigate-to :profile-photo-capture])
-                                   (utils/show-popup (label :t/error)
-                                                     (label :t/camera-access-error)))))]))}])
+                           #(if % (dispatch [:navigate-to :profile-photo-capture])
+                                (utils/show-popup (label :t/error)
+                                                  (label :t/camera-access-error)))))]))}])
 
 (defn edit-profile-bage [contact]
   [view st/edit-profile-bage
@@ -80,14 +80,14 @@
           :default-value     status}]
         [touchable-highlight {:on-press #(dispatch [:set-in [:profile-edit :edit-status?] true])}
          [view
-          (if (str/blank? status)
+          (if (string/blank? status)
             [text {:style st/add-a-status}
              (label :t/status)]
             [text {:style st/profile-status-text}
              (colorize-status-hashtags status)])]])]]))
 
 (defn status-prompt [{:keys [status]}]
-  (when (or (nil? status) (str/blank? status))
+  (when (or (nil? status) (string/blank? status))
     [view st/status-prompt
      [text {:style st/status-prompt-text}
       (colorize-status-hashtags (label :t/status-prompt))]]))
@@ -96,7 +96,7 @@
   [current-account [:get-current-account]
    changed-account [:get :profile-edit]]
   {:component-will-unmount #(dispatch [:set-in [:profile-edit :edit-status?] false])}
-  (let [profile-edit-data-valid? (s/valid? ::v/profile changed-account)
+  (let [profile-edit-data-valid? (spec/valid? ::v/profile changed-account)
         profile-edit-data-changed? (or (not= (:name current-account) (:name changed-account))
                                        (not= (:status current-account) (:status changed-account))
                                        (not= (:photo-path current-account) (:photo-path changed-account)))]
@@ -104,10 +104,10 @@
      [status-bar]
      [edit-my-profile-toolbartoolbar]
      [view st/edit-my-profile-form
-       [edit-profile-bage changed-account]
-       [edit-profile-status changed-account]
-       [status-prompt changed-account]]
+      [edit-profile-bage changed-account]
+      [edit-profile-status changed-account]
+      [status-prompt changed-account]]
      (when (and profile-edit-data-changed? profile-edit-data-valid?)
        [sticky-button (label :t/save) #(do
-                                          (dispatch [:check-status-change (:status changed-account)])
-                                          (dispatch [:account-update changed-account]))])]))
+                                         (dispatch [:check-status-change (:status changed-account)])
+                                         (dispatch [:account-update changed-account]))])]))

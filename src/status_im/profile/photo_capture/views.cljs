@@ -1,4 +1,4 @@
-(ns status-im.profile.photo-capture.screen
+(ns status-im.profile.photo-capture.views
   (:require [re-frame.core :refer [subscribe dispatch dispatch-sync]]
             [clojure.walk :refer [keywordize-keys]]
             [status-im.components.react :refer [view

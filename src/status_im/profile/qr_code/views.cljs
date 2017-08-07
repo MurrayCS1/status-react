@@ -1,4 +1,4 @@
-(ns status-im.profile.qr-code.screen
+(ns status-im.profile.qr-code.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [status-im.components.react :refer [view
                                                 text
@@ -54,5 +54,3 @@
     [touchable-highlight {:onPress #(dispatch [:navigate-back])}
      [view st/done-button
       [text {:style st/done-button-text} (label :t/done)]]]]])
-
-

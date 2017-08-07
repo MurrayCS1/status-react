@@ -1,7 +1,7 @@
-(ns status-im.profile.screen
+(ns status-im.profile.views
   (:require-macros [status-im.utils.views :refer [defview]])
   (:require [re-frame.core :refer [dispatch]]
-            [clojure.string :as str]
+            [clojure.string :as string]
             [reagent.core :as r]
             [status-im.contacts.styles :as cst]
             [status-im.components.common.common :refer [separator
@@ -138,7 +138,7 @@
    (str tag " ")])
 
 (defn colorize-status-hashtags [status]
-  (for [[i status] (map-indexed vector (str/split status #" "))]
+  (for [[i status] (map-indexed vector (string/split status #" "))]
     (if (hash-tag? status)
       ^{:key (str "item-" i)}
       [tag-view status]
@@ -146,10 +146,10 @@
       (str status " "))))
 
 (defn profile-info-phone-item [phone & [options]]
-  (let [phone-empty? (or (nil? phone) (str/blank? phone))
+  (let [phone-empty? (or (nil? phone) (string/blank? phone))
         phone-text  (if phone-empty?
-                       (label :t/not-specified)
-                       phone)]
+                      (label :t/not-specified)
+                      phone)]
     [profile-info-item {:label        (label :t/phone-number)
                         :value        phone-text
                         :options      options
@@ -180,7 +180,7 @@
 
 (defn profile-status [status & [edit?]]
   [view st/profile-status-container
-   (if (or (nil? status) (str/blank? status))
+   (if (or (nil? status) (string/blank? status))
      [touchable-highlight {:on-press profile-status-on-press}
       [view
        [text {:style st/add-a-status}
@@ -222,7 +222,7 @@
    [scroll-view
     [view st/profile-form
      [profile-badge contact]
-     (when (and (not (nil? status)) (not (str/blank? status)))
+     (when (and (not (nil? status)) (not (string/blank? status)))
        [profile-status status])]
     [form-spacer]
     [profile-actions contact chat-id]
