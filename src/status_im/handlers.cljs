@@ -1,36 +1,36 @@
 (ns status-im.handlers
   (:require
-    [re-frame.core :refer [after dispatch dispatch-sync debug reg-fx]]
-    [status-im.db :refer [app-db]]
-    [status-im.data-store.core :as data-store]
-    [taoensso.timbre :as log]
-    [status-im.utils.crypt :refer [gen-random-bytes]]
-    [status-im.components.status :as status]
-    [status-im.components.permissions :as permissions]
-    [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
-    status-im.chat.handlers
-    status-im.group.chat-settings.events
-    status-im.navigation.handlers
-    status-im.contacts.events
-    status-im.discover.handlers
-    status-im.group.events
-    status-im.profile.handlers
-    status-im.commands.handlers.loading
-    status-im.commands.handlers.jail
-    status-im.qr-scanner.handlers
-    status-im.accounts.handlers
-    status-im.protocol.handlers
-    status-im.transactions.handlers
-    status-im.network.handlers
-    status-im.debug.handlers
-    status-im.bots.handlers
-    [status-im.utils.types :as t]
-    [status-im.i18n :refer [label]]
-    [status-im.constants :refer [console-chat-id]]
-    [status-im.utils.ethereum-network :as enet]
-    [status-im.utils.instabug :as inst]
-    [status-im.utils.platform :as p]
-    [status-im.js-dependencies :as dependencies]))
+   [re-frame.core :refer [after dispatch dispatch-sync debug reg-fx]]
+   [status-im.db :refer [app-db]]
+   [status-im.data-store.core :as data-store]
+   [taoensso.timbre :as log]
+   [status-im.utils.crypt :refer [gen-random-bytes]]
+   [status-im.components.status :as status]
+   [status-im.components.permissions :as permissions]
+   [status-im.utils.handlers :refer [register-handler register-handler-fx] :as u]
+   status-im.chat.handlers
+   status-im.group.chat-settings.events
+   status-im.navigation.handlers
+   status-im.contacts.events
+   status-im.discover.handlers
+   status-im.group.events
+   status-im.profile.events
+   status-im.commands.handlers.loading
+   status-im.commands.handlers.jail
+   status-im.qr-scanner.handlers
+   status-im.accounts.handlers
+   status-im.protocol.handlers
+   status-im.transactions.handlers
+   status-im.network.handlers
+   status-im.debug.handlers
+   status-im.bots.handlers
+   [status-im.utils.types :as t]
+   [status-im.i18n :refer [label]]
+   [status-im.constants :refer [console-chat-id]]
+   [status-im.utils.ethereum-network :as enet]
+   [status-im.utils.instabug :as inst]
+   [status-im.utils.platform :as p]
+   [status-im.js-dependencies :as dependencies]))
 
 ;; -- Common --------------------------------------------------------------
 

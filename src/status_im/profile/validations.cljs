@@ -1,25 +1,25 @@
 (ns status-im.profile.validations
-  (:require [cljs.spec.alpha :as s]
-            [status-im.constants :refer [console-chat-id wallet-chat-id]]
-            [status-im.chat.constants :as chat-consts]
-            [clojure.string :as str]
-            [status-im.utils.homoglyph :as h]))
+  (:require [cljs.spec.alpha :as spec]
+            [clojure.string :as string]
+            [status-im.chat.constants :as chat.constants]
+            [status-im.constants :as constants]
+            [status-im.utils.homoglyph :as homoglyph]))
 
 (defn correct-name? [username]
-  (when-let [username (some-> username (str/trim))]
+  (when-let [username (some-> username (string/trim))]
     (every? false?
-      [(str/blank? username)
-       (h/matches username console-chat-id)
-       (h/matches username wallet-chat-id)
-       (str/includes? username chat-consts/command-char)
-       (str/includes? username chat-consts/bot-char)])))
+            [(string/blank? username)
+             (homoglyph/matches username constants/console-chat-id)
+             (homoglyph/matches username constants/wallet-chat-id)
+             (string/includes? username chat.constants/command-char)
+             (string/includes? username chat.constants/bot-char)])))
 
 (defn correct-email? [email]
   (let [pattern #"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"]
-    (or (str/blank? email)
+    (or (string/blank? email)
         (and (string? email) (re-matches pattern email)))))
 
 (s/def ::name correct-name?)
 (s/def ::email correct-email?)
 
-(s/def ::profile (s/keys :req-un [::name]))
+(s/def ::profile (spec/keys :req-un [::name]))
