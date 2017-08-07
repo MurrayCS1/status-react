@@ -186,14 +186,7 @@
 (defn load-messages!
   ([db] (load-messages! db nil))
   ([{:keys [current-chat-id] :as db} _]
-   (let [messages (messages/get-by-chat-id current-chat-id)]
-     (doseq [{:keys [content] :as message} messages]
-       (when (and (:command content)
-                  (not (:content content)))
-         ;; todo rewrite it so that commands defined outside chat's context
-         ;; (bots' commands in group chats and global commands in all chats)
-         ;; could be rendered properly
-         (dispatch [:request-command-data (assoc message :chat-id current-chat-id)])))
+   (let [messages (messages/get-by-chat-id current-chat-id)] 
      (assoc db :messages messages))))
 
 (defn init-chat
